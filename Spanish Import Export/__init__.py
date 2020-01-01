@@ -32,8 +32,6 @@ def export_spanish():
     file.write(file_content_as_string)
     file.close()
 
-    config = mw.addonManager.getConfig(__name__)
-
 
 def import_spanish():
     config = mw.addonManager.getConfig(__name__)
@@ -43,8 +41,8 @@ def import_spanish():
     lesson_media_files = [f for f in listdir(lesson_media_directory)]
 
     anki_media_directory = config['anki-media-directory']
-    for lessonMediaFile in lesson_media_files:
-        copyfile(lesson_media_directory + lessonMediaFile, anki_media_directory + lessonMediaFile)
+    for lesson_media_file in lesson_media_files:
+        copyfile(lesson_media_directory + lesson_media_file, anki_media_directory + lesson_media_file)
 
     import_deck_name = config['import-to-deck']
     import_model_name = config['import-model']

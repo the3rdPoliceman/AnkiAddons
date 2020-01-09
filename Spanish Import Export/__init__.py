@@ -6,33 +6,6 @@ from os import listdir
 from shutil import copyfile
 
 
-def export_spanish():
-    config = mw.addonManager.getConfig(__name__)
-    file_path = config['export_file_path']
-    deck_names = config['decks-to-export']
-    states = config['states-to-export']
-
-    file_content_as_string = u" "
-    for deckName in deck_names:
-        card_ids = set([])
-        note_ids = set([])
-
-        for state in states:
-            card_ids = mw.col.findCards("\"deck:" + deckName + "\" " + state)
-            for cardId in card_ids:
-                note_ids.add(mw.col.getCard(cardId).nid)
-
-        for noteId in note_ids:
-            note = mw.col.getNote(noteId)
-            file_content_as_string += note.fields[2]
-            file_content_as_string += "\n"
-
-    file_content_as_string = file_content_as_string.encode('utf-8').strip()
-    file = open(file_path, "wb")
-    file.write(file_content_as_string)
-    file.close()
-
-
 def import_spanish():
     config = mw.addonManager.getConfig(__name__)
     base_directory = QtWidgets.QFileDialog.getExistingDirectory(mw, 'Select base directory')
@@ -60,11 +33,59 @@ def import_spanish():
     ti.run()
 
 
-# create a new menu item
-exportAction = QAction("Export Spanish", mw)
-exportAction.triggered.connect(export_spanish)
-mw.form.menuTools.addAction(exportAction)
+def export_spanish():
+    config = mw.addonManager.getConfig(__name__)
+    file_path = config['export-file-path']
+    decks_details = config['decks-export-details']
 
+    file_content_as_string = u" "
+    for decks_detail in decks_details:
+        deck_name = decks_detail["deck"]
+        states_to_export = decks_detail["states-to-export"]
+        spanish_field_index = decks_detail["field-index-containing-spanish"]
+        note_ids = set([])
+
+        for state in states_to_export:
+            search_query = "\"deck:" + deck_name + "\" " + state
+            sys.stderr.write(search_query + "\n")
+            card_ids = mw.col.findCards(search_query)
+            for card_id in card_ids:
+                note_ids.add(mw.col.getCard(card_id).nid)
+
+        for noteId in note_ids:
+            note = mw.col.getNote(noteId)
+            file_content_as_string += note.fields[spanish_field_index]
+            file_content_as_string += "\n"
+
+    # write file
+    file_content_as_string = file_content_as_string.encode('utf-8').strip()
+    file = open(file_path, "wb")
+    file.write(file_content_as_string)
+    file.close()
+
+    # move cards to target deck(s)
+    for decks_detail in decks_details:
+        deck_name = decks_detail["deck"]
+        states_to_export = decks_detail["states-to-export"]
+        target_deck = decks_detail["target-deck-after-exporting"]
+
+        target_deck_id = mw.col.decks.id(target_deck)
+        sys.stderr.write("id:" + str(target_deck_id))
+        sys.stderr.write(target_deck)
+        for state in states_to_export:
+            card_ids = mw.col.findCards("\"deck:" + deck_name + "\" " + state)
+            for card_id in card_ids:
+                card = mw.col.getCard(card_id)
+                sys.stderr.write("writing card " + str(card_id) + " to " + str(target_deck_id))
+                card.did = target_deck_id
+                card.flush()
+
+
+# create menu items
 importAction = QAction("Import Spanish", mw)
 importAction.triggered.connect(import_spanish)
 mw.form.menuTools.addAction(importAction)
+
+exportAction = QAction("Export Spanish", mw)
+exportAction.triggered.connect(export_spanish)
+mw.form.menuTools.addAction(exportAction)

@@ -1,14 +1,22 @@
 {
-  "decks-to-export": [
-    "Spanish::Basic Vocabulary::Example Sentences::2000",
-    "Spanish::Basic Vocabulary::Example Sentences::4000",
-    "Spanish::Reading Lessons"
+  "decks-export-details": [
+    { "deck": "Spanish::Basic Vocabulary::Example Sentences::2000",
+      "states-to-export": ["is:review", "is:due"],
+      "field-index-containing-spanish": 2,
+      "target-deck-after-exporting" : "Spanish::Uploaded"
+    },
+    { "deck": "Spanish::Basic Vocabulary::Example Sentences::4000",
+      "states-to-export": ["is:review", "is:due"],
+      "field-index-containing-spanish": 2,
+      "target-deck-after-exporting" : "Spanish::Uploaded"
+    },
+    { "deck": "Spanish::Reading Lessons",
+      "states-to-export": ["is:review", "is:due"],
+      "field-index-containing-spanish": 2,
+      "target-deck-after-exporting" : "Spanish::Uploaded"
+    }
   ],
-  "states-to-export": [
-    "is:review",
-    "is:due"
-  ],
-  "export_file_path": "/Users/dave/Documents/vocab file.txt",
+  "export-file-path": "/Users/dave/Documents/vocab file.txt",
   "anki-media-directory": "/Users/dave/Library/Application Support/Anki2/User 1/collection.media/",
   "import-to-deck": "Spanish::Reading Lessons",
   "import-model": "Spanish Basic Vocabulary Example"
